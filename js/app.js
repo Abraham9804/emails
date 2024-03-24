@@ -15,9 +15,17 @@ document.addEventListener('DOMContentLoaded', function(){
         const posicion = e.target.parentElement //se toma el div del input que activa el evento
         if(e.target.value.trim() === ''){
             mostrarAlerta(`el campo ${e.target.id} esta vacio`, posicion)
-        }else{
-            limpiarAlerta(posicion)
+            return
         }
+
+        if(e.target.id === 'email' && !validarEmail(e.target.value)){
+            mostrarAlerta('el correo no es valido', posicion)
+            return
+        }
+
+        
+            limpiarAlerta(posicion)
+        
     }
 
     function mostrarAlerta(mensaje, posicion){
@@ -42,6 +50,11 @@ document.addEventListener('DOMContentLoaded', function(){
         
     }
 
+    function validarEmail(email){
+        const regex =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/ 
+        resultado = regex.test(email)
+        return resultado
+    }
 
 
 
