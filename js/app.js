@@ -13,11 +13,42 @@ document.addEventListener('DOMContentLoaded', function(){
     const inputMensaje = document.querySelector('#mensaje')
     const formulario = document.querySelector('#formulario')
     const btnEnviar = document.querySelector('#botones').children[0]
-    
+    const btnReset = document.querySelector('#formulario button[type=reset]')
+
     //eventos sobre inputs
-    inputEmail.addEventListener('blur', validar)
-    inputAsunto.addEventListener('blur', validar)
-    inputMensaje.addEventListener('blur', validar)
+    inputEmail.addEventListener('input', validar)
+    inputAsunto.addEventListener('input', validar)
+    inputMensaje.addEventListener('input', validar)
+
+    btnReset.addEventListener('click', function(e){
+        e.preventDefault()
+        Swal.fire({
+            title: "Está seguro?",
+            text: "El formulario se reiniciará",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, borrar!",
+            cancelButtonText: "Cancelar"
+          }).then((result) => {
+            if (result.isConfirmed) {
+            formulario.reset()
+              Swal.fire({
+                title: "confirmado!",
+                text: "Los datos han sido borrados",
+                icon: "success"
+              });
+            }else{
+                Swal.fire({
+                    title: "Cancelado!",
+                    text: "Los datos no han sido borrados",
+                    icon: "error"
+                  });
+            }
+          });
+        //
+    })
 
 
     function validar(e){
