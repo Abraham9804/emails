@@ -1,12 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
-    const correo = {
-        email: '',
-        asunto: '',
-        mensaje: ''
-    }
-
     
-
     //definicion de variables para inputs
     const inputEmail = document.querySelector('#email')
     const inputAsunto = document.querySelector('#asunto')
@@ -14,14 +7,45 @@ document.addEventListener('DOMContentLoaded', function(){
     const formulario = document.querySelector('#formulario')
     const btnEnviar = document.querySelector('#botones').children[0]
     const btnReset = document.querySelector('#formulario button[type=reset]')
+    const spinner = document.querySelector('#spinner')
+    const inputCc = document.querySelector('#cc')
+    //Inicializacion del objeto correo
+    const correo = {
+        email: '',
+        cc: '',
+        asunto: '',
+        mensaje: ''
+    }
 
     //eventos sobre inputs
     inputEmail.addEventListener('input', validar)
-    inputAsunto.addEventListener('input', validar)
-    inputMensaje.addEventListener('input', validar)
+    inputCc.addEventListener('input', validar)
+    inputAsunto.addEventListener('blur', validar)
+    inputMensaje.addEventListener('blur', validar)
 
-    btnReset.addEventListener('click', function(e){
+
+    //Funcion para activar spinner y reiniciar formulario despues de su envio
+    formulario.addEventListener('submit', function(e){
         e.preventDefault()
+        spinner.classList.remove('hidden')
+        spinner.classList.add('flex')
+        console.log(spinner)
+        setTimeout(() =>{
+            spinner.classList.remove('flex')
+            spinner.classList.add('hidden')
+            resetFormulario()
+            Swal.fire({
+                title: "El correo fue enviado con exito",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false
+              });
+        }, 3000)
+    })
+
+    //Funcion para btn reset en formulario
+    btnReset.addEventListener('click', function(e){
+    e.preventDefault()
         Swal.fire({
             title: "Está seguro?",
             text: "El formulario se reiniciará",
@@ -33,34 +57,34 @@ document.addEventListener('DOMContentLoaded', function(){
             cancelButtonText: "Cancelar"
           }).then((result) => {
             if (result.isConfirmed) {
-            formulario.reset()
-              Swal.fire({
-                title: "confirmado!",
-                text: "Los datos han sido borrados",
-                icon: "success"
-              });
-            }else{
+                resetFormulario()
+                console.log(correo)
                 Swal.fire({
-                    title: "Cancelado!",
-                    text: "Los datos no han sido borrados",
-                    icon: "error"
-                  });
-            }
+                    title: "confirmado!",
+                    text: "Los datos han sido borrados",
+                    icon: "success"
+                });
+                }else{
+                    Swal.fire({
+                        title: "Cancelado!",
+                        text: "Los datos no han sido borrados",
+                        icon: "error"
+                    });
+                }
           });
-        //
     })
 
 
+    //Funcion para validar inputs
     function validar(e){
         //se toma el div del input que activa el evento
-        const posicion = e.target.parentElement 
+        const posicion = e.target.parentElement  
 
         //comprueba campos vacios, muestra un mensaje y establece como vacio su campo en el objeto correo
         if(e.target.value.trim() === ''){
             mostrarAlerta(`el campo ${e.target.id} esta vacio`, posicion)
             correo[e.target.id] = ''
-             //comprobacion de objeto correo en cada iteracion
-             comprobarCorreo()
+             comprobarCorreo() //comprobacion de objeto correo en cada iteracion
             return
         }
 
@@ -68,19 +92,24 @@ document.addEventListener('DOMContentLoaded', function(){
         if(e.target.id === 'email' && !validarEmail(e.target.value)){
             mostrarAlerta('el correo no es valido', posicion)
             correo[e.target.id] = ''
-             //comprobacion de objeto correo 
-             comprobarCorreo()
+            comprobarCorreo()
             return
         }
 
-        
-            limpiarAlerta(posicion)
+        //comprueba que el id sea cc y que contenga un formato de correo valido
+        if(e.target.id === 'cc' && !validarEmail(e.target.value)){
+            mostrarAlerta('el correo no es valido', posicion)
+            correo[e.target.id] = ''
+            return
+        }
 
-            //asignar valores dinamicamente al objeto correo
-            correo[e.target.id] = e.target.value.trim().toLowerCase()
+        limpiarAlerta(posicion)
+
+        //asignar valores dinamicamente al objeto correo
+        correo[e.target.id] = e.target.value.trim().toLowerCase()
             
-            comprobarCorreo()
-            console.log(correo)
+        comprobarCorreo()
+        console.log(correo)
     }
 
     function mostrarAlerta(mensaje, posicion){
@@ -126,8 +155,15 @@ document.addEventListener('DOMContentLoaded', function(){
             console.log('desde else')
     }
 
-
-
+    //reinicia los inputs del formulario y establece vacios los campos del objeto correo
+    function resetFormulario(){
+        correo.email = '',
+        correo.cc = '',
+        correo.asunto = '',
+        correo.mensaje = '',
+        formulario.reset()
+        comprobarCorreo()
+    }
 
 
 
