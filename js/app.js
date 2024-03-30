@@ -12,14 +12,13 @@ document.addEventListener('DOMContentLoaded', function(){
     //Inicializacion del objeto correo
     const correo = {
         email: '',
-        cc: '',
         asunto: '',
         mensaje: ''
     }
 
     //eventos sobre inputs
-    inputEmail.addEventListener('input', validar)
-    inputCc.addEventListener('input', validar)
+    inputEmail.addEventListener('blur', validar)
+    inputCc.addEventListener('blur', validar)
     inputAsunto.addEventListener('blur', validar)
     inputMensaje.addEventListener('blur', validar)
 
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function(){
         const posicion = e.target.parentElement  
 
         //comprueba campos vacios, muestra un mensaje y establece como vacio su campo en el objeto correo
-        if(e.target.value.trim() === ''){
+        if(e.target.value.trim() === '' && e.target.id !== 'cc'){
             mostrarAlerta(`el campo ${e.target.id} esta vacio`, posicion)
             correo[e.target.id] = ''
              comprobarCorreo() //comprobacion de objeto correo en cada iteracion
@@ -97,20 +96,28 @@ document.addEventListener('DOMContentLoaded', function(){
         }
 
         //comprueba que el id sea cc y que contenga un formato de correo valido
-        if(e.target.id === 'cc' && !validarEmail(e.target.value)){
+        if(e.target.id === 'cc' && !validarEmail(e.target.value) && e.target.value.trim() !== ''){
             mostrarAlerta('el correo no es valido', posicion)
-            correo[e.target.id] = ''
             return
         }
 
         limpiarAlerta(posicion)
 
         //asignar valores dinamicamente al objeto correo
-        correo[e.target.id] = e.target.value.trim().toLowerCase()
+            if(e.target.value != ''){
+                correo[e.target.id] = e.target.value.trim().toLowerCase()
+                }
+        
+       
+        //elimina la propiedad cc del objeto correo si esta vacia
+            if(e.target.id === 'cc'  && e.target.value.trim() == ''){
+                    delete correo[e.target.id]
+                }
             
         comprobarCorreo()
         console.log(correo)
     }
+
 
     function mostrarAlerta(mensaje, posicion){
         //funcion para mostrar solo una alerta por input
@@ -124,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function(){
       
     }
 
+
     //funcion que limpia la alerta de campo vacio
     function limpiarAlerta(posicion){
        const  alerta = posicion.querySelector('.bg-red-600')
@@ -133,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         
     }
+
 
     //valida que el correo tenga un formato valido
     function validarEmail(email){
@@ -152,8 +161,9 @@ document.addEventListener('DOMContentLoaded', function(){
             //activa el btn enviar si ya no hay campos vacios en el formulario
             btnEnviar.classList.remove('opacity-50')
             btnEnviar.disabled = false
-            console.log('desde else')
+            
     }
+
 
     //reinicia los inputs del formulario y establece vacios los campos del objeto correo
     function resetFormulario(){
@@ -164,7 +174,6 @@ document.addEventListener('DOMContentLoaded', function(){
         formulario.reset()
         comprobarCorreo()
     }
-
 
 
 
